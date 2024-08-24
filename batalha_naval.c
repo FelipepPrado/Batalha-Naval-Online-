@@ -203,6 +203,7 @@ bool posicionar_navio_tam3(int i, char mat[][TAM]){
     
     printf("Posicione o centro do %d navio de tamanho 3 (ex: A 1): ", i + 1);
     scanf(" %c %d", &linha, &y);
+    fflush(stdin);
     
     x = linha - 'A'; // Converte a letra da linha para índice numérico
 
@@ -254,6 +255,7 @@ bool posicionar_navio_tam2(int i,char mat[][TAM]){
     if(sent == 'V' || sent == 'v'){
         printf("Posicione o extremo de cima do navio %d de tamanho 2 (ex: A 1): ", i + 1);
         scanf(" %c %d", &linha, &y);
+        fflush(stdin);
         x = linha - 'A'; // Converte a letra da coluna para índice numérico
 
         if(x >= 0 && x+1 < TAM && y >= 0 && y < TAM && mat[x][y] == '~' && mat[x+1][y] == '~'){
@@ -269,6 +271,7 @@ bool posicionar_navio_tam2(int i,char mat[][TAM]){
     if(sent == 'H' || sent == 'h'){
         printf("Posicione o extremo da esquerda do navio %d de tamanho 2 (ex: A 1): ", i + 1);
         scanf(" %c %d", &linha, &y);
+        fflush(stdin);
         x = linha - 'A'; // Converte a letra da coluna para índice numérico
 
         if(x >= 0 && x < TAM &&  y >= 0 && y+1 < TAM && mat[x][y] == '~' && mat[x][y+1] == '~'){
