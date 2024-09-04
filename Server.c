@@ -122,7 +122,7 @@ int main() {
         printf("\nJogador 1, insira as coordenadas do ataque (ex: A 1): ");
         scanf(" %c%d", &col, &y);
         x = col - 'A';
-        if(x < 0 && x >= TAM && y < 0 && y >= TAM){
+        if(x < 0 || x >= TAM || y < 0 || y >= TAM){//MELHORAR ESSA PARTE
             printf("Coordenadas Invalidas!!\n");
             continue;
         }
@@ -158,7 +158,7 @@ int main() {
         }
         else{
             hitbuffer = 0;
-            printf("Jogador 2 Errou!!!!!!!");
+            printf("Jogador 2 Errou!!!!!!!\n");
         }
         printf("Jogador 1 (Defesa)\t\tJogador 1 (Ataque)\n");
         print2_mat(mat_def, mat_atk);
@@ -430,7 +430,7 @@ bool realizar_ataque(char mat_defesa[][TAM], int x, int y){
         mat_defesa[x][y] = 'X'; // 'X' representa um navio atingido
         return true;
     }
-    else{
+    else if(mat_defesa[x][y] == '~'){
         mat_defesa[x][y] = 'O'; // 'O' representa um ataque na água
         return false;
     }
