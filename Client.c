@@ -87,8 +87,9 @@ int main() {
     printf("Jogador 1, posicione seus navios:\n");
     posicionar_navios(mat_def);
 
-    
     send(clientSocket, (char*)&jogo_ativo, sizeof(jogo_ativo), 0);
+    
+    // Recebe dados do cliente
     while(jogo_ativo){
         //Limpa a tela para a vez do Jogador 2
         system("cls");
@@ -125,8 +126,16 @@ int main() {
         printf("\nJogador 1, insira as coordenadas do ataque (ex: A 1): ");
         scanf(" %c%d", &col, &y);
         x = col - 'A';
-        if(x < 0 && x >= TAM && y < 0 && y >= TAM){
+        while(x < 0 || x >= TAM || y < 0 || y >= TAM){//MELHORAR ESSA PARTE
+            system("cls");
             printf("Coordenadas Invalidas!!\n");
+            printf("Jogador 1 (Defesa)\t\tJogador 1 (Ataque)\n");
+            print2_mat(mat_def, mat_atk);
+
+            // Jogador 1 ataca
+            printf("\nJogador 1, insira as coordenadas do ataque (ex: A 1): ");
+            scanf(" %c%d", &col, &y);
+            x = col - 'A';
             continue;
         }
         send(clientSocket, (char*)&x, sizeof(x), 0);
@@ -402,7 +411,7 @@ bool realizar_ataque(char mat_defesa[][TAM], int x, int y){
         mat_defesa[x][y] = 'X'; // 'X' representa um navio atingido
         return true;
     }
-    else{
+    else if(mat_defesa[x][y] == '~'){
         mat_defesa[x][y] = 'O'; // 'O' representa um ataque na água
         return false;
     }
