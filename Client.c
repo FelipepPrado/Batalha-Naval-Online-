@@ -149,8 +149,10 @@ int main() {
             count_vt+=1;
         }
         else{
-            mat_atk[x][y] = 'O'; // 'O' representa um ataque na água
-            printf("Água!\n");
+            if(mat_atk[x][y] == '~'){//Não tem o 'a' na condição pq a matriz ataque n possui esse 'a'
+                mat_atk[x][y] = 'O'; // 'O' representa um ataque na água
+                printf("Água!\n");
+            }
         }
 
         if(count_vt == 18){
@@ -411,8 +413,9 @@ bool realizar_ataque(char mat_defesa[][TAM], int x, int y){
         mat_defesa[x][y] = 'X'; // 'X' representa um navio atingido
         return true;
     }
-    else if(mat_defesa[x][y] == '~'){
+    else if(mat_defesa[x][y] == '~' || mat_defesa[x][y] == 'a'){
         mat_defesa[x][y] = 'O'; // 'O' representa um ataque na água
         return false;
     }
+    return false;
 }
