@@ -368,7 +368,7 @@ bool posicionar_navio_tam3(int i, char mat[][TAM]){
 
     printf("Defina a direção do navio de tamanho 3 em Vertica(V) ou Horizontal(H): ");
     scanf(" %c", &sent);
-    if(sent != 'V' && sent != 'H'){
+    if(sent != 'V' && sent != 'v' && sent != 'H' && sent != 'h'){
         printf("Direção invalida\n");
         return 0;
     }
@@ -387,7 +387,7 @@ bool posicionar_navio_tam3(int i, char mat[][TAM]){
     	return 0; // Indica o fracasso na operacao
     }
 
-    if(sent == 'V' && (x-1) >= 0 && (x+1) < TAM && mat[x-1][y]=='~' && mat[x+1][y]=='~'){
+    if(sent == 'V' || sent == 'v' && (x-1) >= 0 && (x+1) < TAM && mat[x-1][y]=='~' && mat[x+1][y]=='~'){
         mat[x+1][y]='N';
         mat[x-1][y]='N';
         area_nav(mat,x-1,y);
@@ -397,7 +397,7 @@ bool posicionar_navio_tam3(int i, char mat[][TAM]){
         return 1; // Sucesso
     }
 
-    if(sent == 'H' && (y-1) >= 0 && (y+1) < TAM && mat[x][y-1]=='~' && mat[x][y+1]=='~'){
+    if(sent == 'H' || sent == 'h' && (y-1) >= 0 && (y+1) < TAM && mat[x][y-1]=='~' && mat[x][y+1]=='~'){
         mat[x][y+1]='N';
         mat[x][y-1]='N';
         area_nav(mat,x,y-1);
@@ -419,7 +419,7 @@ bool posicionar_navio_tam2(int i,char mat[][TAM]){
     printf("Defina a direção do navio de tamanho 2 em Vertica(V) ou Horizontal(H): ");
     scanf(" %c", &sent);
 
-    if(sent != 'V' && sent != 'H'){
+    if(sent != 'V' && sent != 'v' && sent != 'H' && sent != 'h'){
         printf("Direção invalida\n");
         return 0;
     }
