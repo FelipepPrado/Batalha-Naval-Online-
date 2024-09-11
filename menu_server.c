@@ -191,7 +191,7 @@ int main() {
                     closesocket(clientSocket);
                     WSACleanup();
                     printf("Jogador 2 não aceitou sua solicitação.\nRetornando ao Menu\n");
-                    sleep(2);
+                    Sleep(2);
                     break;
                 }
             }
@@ -200,7 +200,7 @@ int main() {
                 closesocket(clientSocket);
                 WSACleanup();
                 printf("Retornando ao Menu\n");
-                sleep(2);
+                Sleep(2);
                 break;
             }
         }
