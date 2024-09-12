@@ -1,23 +1,15 @@
-// servidor.c
+// cliente.c
 #include <stdio.h>
 #include <winsock2.h>
-#include <stdlib.h>
 #include <stdbool.h>
 #include <locale.h>
-#include <time.h>
 
 #pragma comment(lib, "ws2_32.lib")
 
 #define TAM 10
 #define NUM_NAVIOS 9
+#define SERVER_IP "127.0.0.1" // Endereço IP do servidor do pc que abrir o server
 #define PORT 8080
-
-int rodar_jogo();
-void menu();
-int rept();
-void anim_navio();
-void clearScreen();
-
 
 // Inicia a tabela da batalha naval
 void inic_mat(char mat[][TAM]);
@@ -44,302 +36,136 @@ bool realizar_ataque(char mat_defesa[][TAM], int x, int y);
 
 int main() {
     WSADATA wsaData;
-    SOCKET serverSocket, clientSocket;
-    struct sockaddr_in serverAddr, clientAddr;
-    int clientAddrLen = sizeof(clientAddr);
-    //Matrizes para mandar e receber posições
+    SOCKET clientSocket;
+    struct sockaddr_in serverAddr;
+    //Variáveis para atacar[0](posição 0 é a que manda) e ser atacado[1](posição 1 é a)
     int colbuffer;
     int linbuffer;
     int bytesReceived;
     char mat_def[TAM][TAM], mat_atk[TAM][TAM];//Matrizes de Ataque e defesa
     int x, y;
     char col;
-    int jogo_ativo;
-    int hitbuffer, count_vt,count_dt;
-    setlocale(LC_ALL, "Portuguese");
-    while(1){
-        count_vt = 0;
-        count_dt = 0;
-        jogo_ativo = 1;
-        int ret, jogar_de_novo;
-        if((ret=rodar_jogo())==0){
-            return 0;
-        }
-        // Inicializa o Winsock
-        if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-            printf("Falha na inicialização do Winsock.\n");
-            return 1;
-        }
+    int jogo_ativo = 1;
+    int hitbuffer, count_vt, count_dt;
+    count_vt = 0;
+    count_dt = 0;
 
-        // Cria o socket do servidor
-        serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-        if (serverSocket == INVALID_SOCKET) {
-            printf("Erro ao criar o socket do servidor.\n");
-            WSACleanup();
-            return 1;
-        }
-
-        // Configura o endereço do servidor
-        serverAddr.sin_family = AF_INET;
-        serverAddr.sin_addr.s_addr = INADDR_ANY;
-        serverAddr.sin_port = htons(PORT);
-
-        // Associa o socket a um endereço e porta
-        if (bind(serverSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
-            printf("Erro ao associar o socket.\n");
-            closesocket(serverSocket);
-            WSACleanup();
-            return 1;
-        }
-
-        // Escuta por conexões
-        if (listen(serverSocket, 3) == SOCKET_ERROR) {
-            printf("Erro ao escutar.\n");
-            closesocket(serverSocket);
-            WSACleanup();
-            return 1;
-        }
-
-        printf("Aguardando um segundo jogador na porta %d...\n", PORT);
-
-        // Aceita uma conexão
-        clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientAddrLen);
-        if (clientSocket == INVALID_SOCKET) {
-            printf("Erro ao aceitar conexão.\n");
-            closesocket(serverSocket);
-            WSACleanup();
-            return 1;
-        }
-
-        printf("Segundo jogador encontrado!!!\n");
-        while(1){
-            //Inicializa as Matrizes
-            inic_mat(mat_def);
-            inic_mat(mat_atk);
-
-            // Posiciona os navios do jogador
-            print_mat(mat_def);
-            printf("Jogador 1, posicione seus navios:\n");
-            posicionar_navios(mat_def);
-            
-            recv(clientSocket, (char*)&jogo_ativo, sizeof(jogo_ativo),0);
-
-            // Recebe dados do cliente
-            while (jogo_ativo) {
-                system("cls");
-                printf("Jogador 1 (Defesa)\t\tJogador 1 (Ataque)\n");
-                print2_mat(mat_def, mat_atk);
-
-                // Jogador 1 ataca
-                printf("\nJogador 1, insira as coordenadas do ataque (ex: A 1): ");
-                scanf(" %c%d", &col, &y);
-                x = col - 'A';
-                if(x < 0 || x >= TAM || y < 0 || y >= TAM){//MELHORAR ESSA PARTE
-                    printf("Coordenadas Invalidas!!\n");
-                    continue;
-                }
-                send(clientSocket, (char*)&x, sizeof(x), 0);
-                send(clientSocket, (char*)&y, sizeof(y), 0);
-
-                recv(clientSocket, (char*)&hitbuffer, sizeof(hitbuffer), 0);
-                
-                if(hitbuffer == 1){
-                    mat_atk[x][y] = 'X'; // 'X' representa um navio atingido
-                    printf("Acertou!\n");
-                    count_vt+=1;
-                }
-                else{
-                    if(mat_atk[x][y] == '~'){//Não tem o 'a' na condição pq a matriz ataque n possui esse 'a'
-                        mat_atk[x][y] = 'O'; // 'O' representa um ataque na água
-                        printf("Água!\n");
-                    }
-                }
-
-                if(count_vt == 18){
-                    printf("Jogador 1 venceu!\n");
-                    break;
-                }
-                //Limpa a tela para a vez do Jogador 2
-                system("cls");
-                printf("Vez do Jogador 2\n");
-                recv(clientSocket,(char*)&linbuffer, sizeof(linbuffer), 0);
-                recv(clientSocket,(char*)&colbuffer, sizeof(colbuffer), 0);
-                if(realizar_ataque(mat_def,linbuffer, colbuffer)){
-                    hitbuffer = 1;
-                    printf("SEU NAVIO FOI ACERTADO\n");
-                    count_dt+=1;
-                }
-                else{
-                    hitbuffer = 0;
-                    printf("Jogador 2 Errou!!!!!!!\n");
-                }
-                printf("Jogador 1 (Defesa)\t\tJogador 1 (Ataque)\n");
-                print2_mat(mat_def, mat_atk);
-
-                send(clientSocket,(char*)&hitbuffer, sizeof(int), 0);
-
-                if(count_dt == 18){
-                    printf("Jogador 1 você perdeu!\n");
-                    break;
-                }
-            }
-            if(rept()){
-                jogar_de_novo = 0;
-                recv(clientSocket, (char*)&jogar_de_novo, sizeof(int), 0);
-                if(jogar_de_novo == 1){//Supondo que ele tenha respondido
-                    jogar_de_novo = 1;
-                    send(clientSocket, (char*)&jogar_de_novo, sizeof(int), 0);
-                    continue;
-                }
-                else{
-                    closesocket(clientSocket);
-                    WSACleanup();
-                    printf("Jogador 2 não aceitou sua solicitação.\nRetornando ao Menu\n");
-                    Sleep(2);
-                    break;
-                }
-            }
-            else{
-                // Fecha o socket do cliente
-                closesocket(clientSocket);
-                WSACleanup();
-                printf("Retornando ao Menu\n");
-                Sleep(2);
-                break;
-            }
-        }
+    // Inicializa o Winsock
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+        printf("Falha na inicialização do Winsock.\n");
+        return 1;
     }
-}
 
-//bota o jogo para rodar
-int rodar_jogo(){
-    int numero;
-    system("cls");
-    anim_navio();
-    system("cls");
-    while (1) {
-        menu();
-        printf("Escolha uma opcao: ");
-        scanf("%d", &numero);
-        system("cls"); 
-        
-        switch (numero) {
-            case 1:
-                printf("Entrando no jogo...\n");
-                return 1;
-                
-            case 2:
-                printf("Saindo...\n");
-                return 0;
-            default:
-                printf("Opcao invalida. Tente novamente.\n");
-        }
+    // Cria o socket do cliente
+    clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (clientSocket == INVALID_SOCKET) {
+        printf("Erro ao criar o socket do cliente.\n");
+        WSACleanup();
+        return 1;
     }
-}
 
-void menu() {
-    // Código ANSI para a cor azul
-    printf("\033[1;34m");
+    // Configura o endereço do servidor
+    serverAddr.sin_family = AF_INET;
+    serverAddr.sin_addr.s_addr = inet_addr(SERVER_IP);
+    serverAddr.sin_port = htons(PORT);
 
-    // Imprimir o texto em formato ASCII
-    printf("* d8888b.  .d8b.  d888888b  .d8b.  db      db   db  .d8b.       d8b   db  .d8b.  db    db  .d8b.  db *\n");
-    printf("* 88  `8D d8' `8b `~~88~~' d8' `8b 88      88   88 d8' `8b      888o  88 d8' `8b 88    88 d8' `8b 88 *\n");
-    printf("* 88oooY' 88ooo88    88    88ooo88 88      88ooo88 88ooo88      88V8o 88 88ooo88 Y8    8P 88ooo88 88 *\n");
-    printf("* 88~~~b. 88~~~88    88    88~~~88 88      88~~~88 88~~~88      88 V8o88 88~~~88 `8b  d8' 88~~~88 88 *\n");
-    printf("* 88   8D 88   88    88    88   88 88booo. 88   88 88   88      88  V888 88   88  `8bd8'  88   88 88booo. *\n");
-    printf("* Y8888P' YP   YP    YP    YP   YP Y88888P YP   YP YP   YP      VP   V8P YP   YP    YP    YP   YP Y88888P *\n");
-    // Resetar a cor para o padrão
-    printf("\033[0m");
+    // Conecta ao servidor
+    if (connect(clientSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
+        printf("Erro ao conectar ao servidor.\n");
+        closesocket(clientSocket);
+        WSACleanup();
+        return 1;
+    }
+    printf("Segundo jogador encontrado!!!\n");
 
+    //Inicializa as Matrizes
+    inic_mat(mat_def);
+    inic_mat(mat_atk);
 
-    // Espaço antes do menu para clareza
-    printf("\n");
-   
+    // Posiciona os navios do jogador
+    print_mat(mat_def);
+    printf("Jogador 1, posicione seus navios:\n");
+    posicionar_navios(mat_def);
 
-    // Menu de opções
-    printf("\t\t\t\t\t1. Jogar\n");
-    printf("\t\t\t\t\t2. Sair\n");
-
-    // Linha divisória
-    printf("\n\t\t\t\t\t===========================\n");
-}
-
-int rept(){
-    int jogar_de_novo;
-    while (1){
-        printf("Deseja jogar novamente\n\n1. sim\n2 .nao?");
-        scanf("%d", &jogar_de_novo);
+    send(clientSocket, (char*)&jogo_ativo, sizeof(jogo_ativo), 0);
+    
+    // Recebe dados do cliente
+    while(jogo_ativo){
+        //Limpa a tela para a vez do Jogador 2
         system("cls");
+        printf("Vez do Jogador 2\n");
 
-        switch (jogar_de_novo){
-                case 1:
-                    return 1;                
-                case 2:
-                    return 0;
-                default:
-                    printf("Opção invalida. Tente novamente.\n");
+        recv(clientSocket,(char*)&linbuffer, sizeof(linbuffer), 0);
+        recv(clientSocket,(char*)&colbuffer, sizeof(colbuffer), 0);
+
+        if(realizar_ataque(mat_def,linbuffer,colbuffer)){
+            hitbuffer = 1;
+            printf("SEU NAVIO FOI ACERTADO\n");
+            count_dt+=1;
+        }
+        else{
+            hitbuffer = 0;
+            printf("Jogador 2 Errou!!!!!!!\n");
+        }
+        printf("Jogador 1 (Defesa)\t\tJogador 1 (Ataque)\n");
+        print2_mat(mat_def, mat_atk);
+
+        send(clientSocket,(char*)&hitbuffer, sizeof(hitbuffer), 0);
+
+        if(count_dt == 18){
+            printf("Jogador 1 você perdeu!\n");
+            jogo_ativo = 0;
+            break;
+        }
+
+        system("cls");
+        printf("Jogador 1 (Defesa)\t\tJogador 1 (Ataque)\n");
+        print2_mat(mat_def, mat_atk);
+
+        // Jogador 1 ataca
+        printf("\nJogador 1, insira as coordenadas do ataque (ex: A 1): ");
+        scanf(" %c%d", &col, &y);
+        x = col - 'A';
+        while(x < 0 || x >= TAM || y < 0 || y >= TAM){//MELHORAR ESSA PARTE
+            system("cls");
+            printf("Coordenadas Invalidas!!\n");
+            printf("Jogador 1 (Defesa)\t\tJogador 1 (Ataque)\n");
+            print2_mat(mat_def, mat_atk);
+
+            // Jogador 1 ataca
+            printf("\nJogador 1, insira as coordenadas do ataque (ex: A 1): ");
+            scanf(" %c%d", &col, &y);
+            x = col - 'A';
+            continue;
+        }
+        send(clientSocket, (char*)&x, sizeof(x), 0);
+        send(clientSocket, (char*)&y, sizeof(y), 0);
+
+        recv(clientSocket, (char*)&hitbuffer, sizeof(int), 0);
+        
+        if(hitbuffer == 1){
+            mat_atk[x][y] = 'X'; // 'X' representa um navio atingido
+            printf("Acertou!\n");
+            count_vt+=1;
+        }
+        else{
+            if(mat_atk[x][y] == '~'){//Não tem o 'a' na condição pq a matriz ataque n possui esse 'a'
+                mat_atk[x][y] = 'O'; // 'O' representa um ataque na água
+                printf("Água!\n");
+            }
+        }
+
+        if(count_vt == 18){
+            printf("Jogador 1 venceu!\n");
+            jogo_ativo = 0;
+            break;
         }
     }
-}
 
-void clearScreen() {
-    printf("\033[H\033[J");
-}
-
-void anim_navio() {
-    const char* navioDireita[] = {
-        "                          |    |    |",
-        "                         )_)  )_)  )_)",
-        "                        )___))___))___)",
-        "                       )____)____)_____)",
-        "                     _____|____|____|____",
-        "   \\                 \\----------/"
-    };
-
-
-    const char* onda1[] = {
-        "~~~~~~~~~~~~~~~~~~\\     ~~~~~~      ~~~~~~~~~~~~~~",
-        "  ~~~~ ~~~ ~~~~~~~~\\~~~~~~~~  ~~~~~~~~~~ ~~~ ~~~ ~~",
-        "   ~~~~  ~~~~~~~~~  ~~~ ~~~  ~~~~  ~~~ ~~",
-        "      ~~~~  ~~~~   ~~~~~~  ~~~~~~   ~~~"
-    };
-
-    const char* onda2[] = {
-        "  ~~~~~~~~  ~~~~\\     ~~~~~~    ~~~~~~~~~~~",
-        "~~~~  ~~~ ~~~~~~~~\\~~~~~~~~ ~~~~~~~ ~~~ ~~ ~~~~",
-        "  ~~~ ~~~~~~~~~  ~~~~  ~~~  ~~~~  ~~~~ ~~",
-        "~~~    ~~~~  ~~~~   ~~~~~~  ~~~~~~   ~~~"
-    };
-
-    int passos = 40;
-    int direc = 1;
-    int posic = 0;
-
-     struct timespec delay;
-    delay.tv_sec = 0;
-    delay.tv_nsec = 200000000;
-    int count=0;
-
-    while (count<=20) {
-        clearScreen();
-        for (int j = 0; j < 6; j++) {
-            for (int k = 0; k < posic; k++) {
-                printf(" ");
-            }
-            printf("%s\n", navioDireita[j]);
-        }
-
-        const char** onda = (posic % 2 == 0) ? onda1 : onda2;
-        for (int j = 0; j < 4; j++) {
-            for (int k = 0; k < posic; k++) {
-                printf(" ");
-            }
-            printf("%s\n", onda[j]);
-        }
-        nanosleep(&delay, NULL);
-        posic += direc;
-        count++;
-    }
+    // Fecha o socket do cliente
+    closesocket(clientSocket);
+    WSACleanup();
+    return 0;
 }
 
 void inic_mat(char mat[][TAM]){
@@ -445,7 +271,7 @@ bool posicionar_navio_tam3(int i, char mat[][TAM]){
 
     printf("Defina a direção do navio de tamanho 3 em Vertica(V) ou Horizontal(H): ");
     scanf(" %c", &sent);
-    if(sent != 'V' && sent != 'v' && sent != 'H' && sent != 'h'){
+    if(sent != 'V' && sent != 'H'){
         printf("Direção invalida\n");
         return 0;
     }
@@ -464,7 +290,7 @@ bool posicionar_navio_tam3(int i, char mat[][TAM]){
     	return 0; // Indica o fracasso na operacao
     }
 
-    if(sent == 'V' || sent == 'v' && (x-1) >= 0 && (x+1) < TAM && mat[x-1][y]=='~' && mat[x+1][y]=='~'){
+    if(sent == 'V' && (x-1) >= 0 && (x+1) < TAM && mat[x-1][y]=='~' && mat[x+1][y]=='~'){
         mat[x+1][y]='N';
         mat[x-1][y]='N';
         area_nav(mat,x-1,y);
@@ -474,7 +300,7 @@ bool posicionar_navio_tam3(int i, char mat[][TAM]){
         return 1; // Sucesso
     }
 
-    if(sent == 'H' || sent == 'h' && (y-1) >= 0 && (y+1) < TAM && mat[x][y-1]=='~' && mat[x][y+1]=='~'){
+    if(sent == 'H' && (y-1) >= 0 && (y+1) < TAM && mat[x][y-1]=='~' && mat[x][y+1]=='~'){
         mat[x][y+1]='N';
         mat[x][y-1]='N';
         area_nav(mat,x,y-1);
@@ -496,7 +322,7 @@ bool posicionar_navio_tam2(int i,char mat[][TAM]){
     printf("Defina a direção do navio de tamanho 2 em Vertica(V) ou Horizontal(H): ");
     scanf(" %c", &sent);
 
-    if(sent != 'V' && sent != 'v' && sent != 'H' && sent != 'h'){
+    if(sent != 'V' && sent != 'H'){
         printf("Direção invalida\n");
         return 0;
     }
