@@ -5,26 +5,25 @@
 #include <locale.h>
 #include <windows.h>
 #include <time.h>
+#include <stdlib.h>
 
 #pragma comment(lib, "ws2_32.lib")
 
 #define TAM 10
-#define NUM_NAVIOS 9
+#define NUM_NAVIOS 1
 #define SERVER_IP "127.0.0.1" // Endereço IP do servidor do pc que abrir o server
 #define PORT 8080
 
+//Menu e jogar novamente
 int rodar_jogo();
 void menu();
-int rept();
 void anim_navio();
 void clearScreen();
-
+int rept();
 
 // Inicia a tabela da batalha naval
 void inic_mat(char mat[][TAM]);
-
 void area_nav(char mat[][TAM],int x,int y);
-
 void print_mat(char mat[][TAM]);
 
 // Printar duas matrizes lado a lado com rótulos
@@ -32,9 +31,7 @@ void print2_mat(char mat1[][TAM], char mat2[][TAM]);
 
 // As 3 funcoes retornam 1 se bem-sucedida, 0 se fracassada
 bool posicionar_navio_tam3(int i, char mat[][TAM]);
-
 bool posicionar_navio_tam2(int i, char mat[][TAM]);
-
 bool posicionar_navio_tam1(int i, char mat[][TAM]);
 
 // Posiciona navios no tabuleiro
@@ -47,21 +44,21 @@ int main() {
     WSADATA wsaData;
     SOCKET clientSocket;
     struct sockaddr_in serverAddr;
-    //Variáveis para atacar[0](posição 0 é a que manda) e ser atacado[1](posição 1 é a)
-    int colbuffer;
-    int linbuffer;
+    int colbuffer, linbuffer;
     int bytesReceived;
     char mat_def[TAM][TAM], mat_atk[TAM][TAM];//Matrizes de Ataque e defesa
     int x, y;
     char col;
     int jogo_ativo;
     int hitbuffer, count_vt, count_dt;
+    int ret, jogar_de_novo;
+    int verificar1, verificar2;
     setlocale(LC_ALL, "Portuguese");
+    
     while(1){
-        count_vt = 0;
-        count_dt = 0;
+
         jogo_ativo = 1;
-        int ret, jogar_de_novo;
+        
         if((ret=rodar_jogo())==0){
             return 0;
         }
@@ -87,12 +84,14 @@ int main() {
 
         // Conecta ao servidor
         if (connect(clientSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
-            printf("Erro ao conectar ao servidor.\n");
             closesocket(clientSocket);
             WSACleanup();
-            return 1;
+            printf("Nenhum jogador encontrado\n");
+            Sleep(2000);
+            continue;
         }
         printf("Segundo jogador encontrado!!!\n");
+        
         while(1) {
             count_vt = 0;
             count_dt = 0;
@@ -108,13 +107,17 @@ int main() {
             send(clientSocket, (char*)&jogo_ativo, sizeof(jogo_ativo), 0);
             
             // Recebe dados do cliente
-            while(jogo_ativo){
+            while (jogo_ativo){
                 //Limpa a tela para a vez do Jogador 2
                 system("cls");
                 printf("Vez do Jogador 2\n");
-
-                recv(clientSocket,(char*)&linbuffer, sizeof(linbuffer), 0);
-                recv(clientSocket,(char*)&colbuffer, sizeof(colbuffer), 0);
+                //Verifica se o jogador 2 ainda está jogando
+                verificar1 = recv(clientSocket,(char*)&linbuffer, sizeof(linbuffer), 0);
+                verificar2 = recv(clientSocket,(char*)&colbuffer, sizeof(colbuffer), 0);
+                if(verificar1 <= 0 || verificar2 <= 0){
+                    printf("Jogador 2 desconectou-se do jogo\n\n");
+                    break;
+                }
 
                 if(realizar_ataque(mat_def,linbuffer,colbuffer)){
                     hitbuffer = 1;
@@ -130,11 +133,12 @@ int main() {
 
                 send(clientSocket,(char*)&hitbuffer, sizeof(hitbuffer), 0);
 
-                if(count_dt == 18){
+                if(count_dt == 3){
                     printf("Jogador 1 voce perdeu!\n\n\n");
                     break;
                 
                 }
+                Sleep(1500);
                 system("cls");
                 printf("Jogador 1 (Defesa)\t\tJogador 1 (Ataque)\n");
                 print2_mat(mat_def, mat_atk);
@@ -143,7 +147,7 @@ int main() {
                 printf("\nJogador 1, insira as coordenadas do ataque (ex: A 1): ");
                 scanf(" %c%d", &col, &y);
                 x = col - 'A';
-                while(x < 0 || x >= TAM || y < 0 || y >= TAM){//MELHORAR ESSA PARTE
+                while(x < 0 || x >= TAM || y < 0 || y >= TAM){
                     system("cls");
                     printf("Coordenadas Invalidas!!\n");
                     printf("Jogador 1 (Defesa)\t\tJogador 1 (Ataque)\n");
@@ -157,9 +161,13 @@ int main() {
                 }
                 send(clientSocket, (char*)&x, sizeof(x), 0);
                 send(clientSocket, (char*)&y, sizeof(y), 0);
+                //Verificar se o jogador 2 ainda está jogando
+                verificar1 = recv(clientSocket, (char*)&hitbuffer, sizeof(int), 0);
+                if(verificar1 <= 0){
+                    printf("Jogador 2 desconectou-se do jogo\n\n");
+                    break;
+                }
 
-                recv(clientSocket, (char*)&hitbuffer, sizeof(int), 0);
-                
                 if(hitbuffer == 1){
                     mat_atk[x][y] = 'X'; // 'X' representa um navio atingido
                     printf("Acertou!\n");
@@ -172,15 +180,17 @@ int main() {
                     }
                 }
 
-                if(count_vt == 18){
+                if(count_vt == 3){
                     printf("Jogador 1 venceu!\n\n\n");
                     break;
                 }
             }
-            if(rept()){
+            //Ele pergunta se quer jogar novamente, mas caso o jogador já não estiver em jogo, ele volta para o menu
+            if(rept() && verificar1 > 0 && verificar2 > 0){
                 jogar_de_novo = 1;
                 send(clientSocket, (char*)&jogar_de_novo, sizeof(int), 0);
-                jogar_de_novo = 0;
+                printf("Esperando resposta do segundo jogdor\n");
+                jogar_de_novo = 0;//Server pra não continuar, caso o jogador 2 não querer jogor novamente
                 recv(clientSocket, (char*)&jogar_de_novo, sizeof(int), 0);
                 if(jogar_de_novo == 1){//Supondo que ele tenha respondido
                     continue;
@@ -189,7 +199,7 @@ int main() {
                     closesocket(clientSocket);
                     WSACleanup();
                     printf("Jogador 2 não aceitou sua solicitação.\nRetornando ao Menu\n");
-                    Sleep(2);
+                    Sleep(1000);
                     break;
                 }
             }
@@ -198,7 +208,7 @@ int main() {
                 closesocket(clientSocket);
                 WSACleanup();
                 printf("Retornando ao Menu\n");
-                Sleep(2);
+                Sleep(1000);
                 break;
             }
         }
