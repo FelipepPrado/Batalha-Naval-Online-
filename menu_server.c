@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <locale.h>
+#include <time.h>
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -14,6 +15,9 @@
 int rodar_jogo();
 void menu();
 int rept();
+void anim_navio();
+void clearScreen();
+
 
 // Inicia a tabela da batalha naval
 void inic_mat(char mat[][TAM]);
@@ -211,6 +215,8 @@ int main() {
 int rodar_jogo(){
     int numero;
     system("cls");
+    anim_navio();
+    system("cls");
     while (1) {
         menu();
         printf("Escolha uma opcao: ");
@@ -273,6 +279,66 @@ int rept(){
                 default:
                     printf("Opção invalida. Tente novamente.\n");
         }
+    }
+}
+
+void clearScreen() {
+    printf("\033[H\033[J");
+}
+
+void anim_navio() {
+    const char* navioDireita[] = {
+        "                          |    |    |",
+        "                         )_)  )_)  )_)",
+        "                        )___))___))___)",
+        "                       )____)____)_____)",
+        "                     _____|____|____|____",
+        "   \\                 \\----------/"
+    };
+
+
+    const char* onda1[] = {
+        "~~~~~~~~~~~~~~~~~~\\     ~~~~~~      ~~~~~~~~~~~~~~",
+        "  ~~~~ ~~~ ~~~~~~~~\\~~~~~~~~  ~~~~~~~~~~ ~~~ ~~~ ~~",
+        "   ~~~~  ~~~~~~~~~  ~~~ ~~~  ~~~~  ~~~ ~~",
+        "      ~~~~  ~~~~   ~~~~~~  ~~~~~~   ~~~"
+    };
+
+    const char* onda2[] = {
+        "  ~~~~~~~~  ~~~~\\     ~~~~~~    ~~~~~~~~~~~",
+        "~~~~  ~~~ ~~~~~~~~\\~~~~~~~~ ~~~~~~~ ~~~ ~~ ~~~~",
+        "  ~~~ ~~~~~~~~~  ~~~~  ~~~  ~~~~  ~~~~ ~~",
+        "~~~    ~~~~  ~~~~   ~~~~~~  ~~~~~~   ~~~"
+    };
+
+    int passos = 40;
+    int direc = 1;
+    int posic = 0;
+
+     struct timespec delay;
+    delay.tv_sec = 0;
+    delay.tv_nsec = 200000000;
+    int count=0;
+
+    while (count<=20) {
+        clearScreen();
+        for (int j = 0; j < 6; j++) {
+            for (int k = 0; k < posic; k++) {
+                printf(" ");
+            }
+            printf("%s\n", navioDireita[j]);
+        }
+
+        const char** onda = (posic % 2 == 0) ? onda1 : onda2;
+        for (int j = 0; j < 4; j++) {
+            for (int k = 0; k < posic; k++) {
+                printf(" ");
+            }
+            printf("%s\n", onda[j]);
+        }
+        nanosleep(&delay, NULL);
+        posic += direc;
+        count++;
     }
 }
 
