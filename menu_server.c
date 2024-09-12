@@ -113,6 +113,8 @@ int main() {
 
         printf("Segundo jogador encontrado!!!\n");
         while(1){
+            count_vt = 0;
+            count_dt = 0;
             //Inicializa as Matrizes
             inic_mat(mat_def);
             inic_mat(mat_atk);
