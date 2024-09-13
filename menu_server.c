@@ -45,7 +45,6 @@ int main() {
     struct sockaddr_in serverAddr, clientAddr;
     int clientAddrLen = sizeof(clientAddr);
     int colbuffer, linbuffer;
-    int bytesReceived;
     char mat_def[TAM][TAM], mat_atk[TAM][TAM];//Matrizes de Ataque e defesa
     int x, y;
     char col;
@@ -108,11 +107,12 @@ int main() {
             WSACleanup();
             return 1;
         }
-
         printf("Segundo jogador encontrado!!!\n");
+
         while(1){
             count_vt = 0;
             count_dt = 0;
+
             //Inicializa as Matrizes
             inic_mat(mat_def);
             inic_mat(mat_atk);
@@ -122,6 +122,7 @@ int main() {
             printf("Jogador 1, posicione seus navios:\n");
             posicionar_navios(mat_def);
             
+            //Serve pro jogo começar apenas quando os dois terminarem de colocar os navios
             recv(clientSocket, (char*)&jogo_ativo, sizeof(jogo_ativo),0);
 
             // Recebe dados do cliente
@@ -142,13 +143,15 @@ int main() {
                 }
                 send(clientSocket, (char*)&x, sizeof(x), 0);
                 send(clientSocket, (char*)&y, sizeof(y), 0);
-                //Verifica se o jogador 2 ainda está jogando
+
+                //Verifica se o jogador 2 ainda está jogando e Recebe se o jogador 1 acertou ou não um navio
                 verificar1 = recv(clientSocket, (char*)&hitbuffer, sizeof(hitbuffer), 0);
                 if(verificar1 <= 0){
                     printf("Jogador 2 desconectou-se do jogo\n\n");
                     break;
                 }
 
+                //Verifica o retorno do client se o jogador 1 acertou
                 if(hitbuffer == 1){
                     mat_atk[x][y] = 'X'; // 'X' representa um navio atingido
                     printf("Acertou!\n");
@@ -161,14 +164,17 @@ int main() {
                     }
                 }
 
+                //Verifica se o Jogador 1 venceu
                 if(count_vt == 3){
-                    printf("Jogador 1 venceu!\n");
+                    printf("Jogador 1 venceu!\n\n");
                     break;
                 }
+
                 //Limpa a tela para a vez do Jogador 2
                 system("cls");
                 printf("Vez do Jogador 2\n");
-                //Verifica se o jogador 2 ainda está jogando
+
+                //Verifica se o jogador 2 ainda está jogando e recebe as duas posições do ataque do jogador 2
                 verificar1 = recv(clientSocket,(char*)&linbuffer, sizeof(linbuffer), 0);
                 verificar2 = recv(clientSocket,(char*)&colbuffer, sizeof(colbuffer), 0);
                 if(verificar1 <= 0 || verificar2 <= 0){
@@ -176,6 +182,7 @@ int main() {
                     break;
                 }
 
+                //Verifica se o jogador 2 acertou e devolve um valor de acordo com isso
                 if(realizar_ataque(mat_def,linbuffer, colbuffer)){
                     hitbuffer = 1;
                     printf("SEU NAVIO FOI ACERTADO\n");
@@ -187,15 +194,18 @@ int main() {
                 }
                 printf("Jogador 1 (Defesa)\t\tJogador 1 (Ataque)\n");
                 print2_mat(mat_def, mat_atk);
-
+                
+                //Envia para o jogador 2 se ele acertou ou não um navio
                 send(clientSocket,(char*)&hitbuffer, sizeof(int), 0);
 
+                //Verifica se o jogador 1 perdeu
                 if(count_dt == 3){
                     printf("Jogador 1 você perdeu!\n");
                     break;
                 }
                 Sleep(1500);
             }
+
             //Ele pergunta se quer jogar novamente, mas caso o jogador já não estiver em jogo, ele volta para o menu
             if(rept() && verificar1 > 0 && verificar2 > 0){
                 jogar_de_novo = 0;
@@ -282,7 +292,7 @@ void menu() {
 int rept(){
     int jogar_de_novo;
     while (1){
-        printf("Deseja jogar novamente\n\n1. sim\n2 .nao?");
+        printf("Deseja jogar novamente?\n\n1. sim\n2 .nao\n");
         scanf("%d", &jogar_de_novo);
         system("cls");
 
@@ -308,7 +318,7 @@ void anim_navio() {
         "                        )___))___))___)",
         "                       )____)____)_____)",
         "                     _____|____|____|____",
-        "   \\                 \\----------/"
+        "   \\                 \\----------------/"
     };
 
 
