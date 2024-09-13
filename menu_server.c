@@ -10,7 +10,7 @@
 #pragma comment(lib, "ws2_32.lib")
 
 #define TAM 10
-#define NUM_NAVIOS 9
+#define NUM_NAVIOS 1
 #define PORT 8080
 
 // Menu e jogar novamente
