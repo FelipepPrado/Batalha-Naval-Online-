@@ -397,79 +397,82 @@ void area_nav(char mat[][TAM],int x,int y){
 	}
 }
 
-void print_mat(char mat[][TAM]){
-    int i, j;
-    printf("  "); 
-    for(j = 0; j < TAM; j++){
+void print_mat(char mat[][TAM]) {
+    printf("  ");
+    for (int j = 0; j < TAM; j++) {
         printf("%d ", j);
     }
     putchar('\n');
     
-    for(i = 0; i < TAM; i++){
+    for (int i = 0; i < TAM; i++) {
         printf("%c ", 'A' + i);
-        for(j = 0; j < TAM; j++){
-            if (mat[i][j] == '~' || mat[i][j] == 'a') {
-                printf("\033[44m \033[0m ");  // Fundo azul
-            } else if (mat[i][j] == 'N') {
-                printf("\033[42mN\033[0m ");  // Fundo verde
-            } else if (mat[i][j] == 'O') {
-                printf("\033[36mO\033[0m ");  // Texto ciano
-            } else if (mat[i][j] == 'X') {
-                printf("\033[31mX\033[0m ");  // Texto vermelho
-            } else {
-                printf("%c ", mat[i][j]);  // Padrão
+        for (int j = 0; j < TAM; j++) {
+            switch (mat[i][j]) {
+                case '~':  // Fundo azul
+                case 'a':
+                    printf("\033[44m \033[0m ");
+                    break;
+                case 'N':  // Fundo verde
+                    printf("\033[42mN\033[0m ");
+                    break;
+                case 'O':  // Texto ciano
+                    printf("\033[36mO\033[0m ");
+                    break;
+                case 'X':  // Texto vermelho
+                    printf("\033[31mX\033[0m ");
+                    break;
+                default:   // Caso padrão
+                    printf("%c ", mat[i][j]);
             }
         }
         putchar('\n');
     }
 }
 
-void print2_mat(char mat1[][TAM], char mat2[][TAM]){
-    int i, j;
-    
+void print_coluna() {
+    // Imprime o cabeçalho com números das colunas
     printf("  ");
-    for(j = 0; j < TAM; j++){
+    for (int j = 0; j < TAM; j++) {
         printf("%d ", j);
     }
+}
+
+void print_linha(char mat[][TAM], int row) {
+    // Imprime uma linha da matriz com a formatação de cores
+    printf("%c ", 'A' + row);
+    for (int j = 0; j < TAM; j++) {
+        switch (mat[row][j]) {
+            case '~':  // Fundo azul
+            case 'a':
+                printf("\033[44m \033[0m ");
+                break;
+            case 'N':  // Fundo verde
+                printf("\033[42mN\033[0m ");
+                break;
+            case 'O':  // Texto ciano
+                printf("\033[36mO\033[0m ");
+                break;
+            case 'X':  // Texto vermelho
+                printf("\033[31mX\033[0m ");
+                break;
+            default:   // Caso padrão
+                printf("%c ", mat[row][j]);
+        }
+    }
+}
+
+void print2_mat(char mat1[][TAM], char mat2[][TAM]) {
+    // Imprime os cabeçalhos das colunas para ambas as matrizes
+    print_coluna();
     printf("\t");
-    printf("  ");
-    for(j = 0; j < TAM; j++){
-        printf("%d ", j);
-    }
+    print_coluna();
     putchar('\n');
 
-    for(i = 0; i < TAM; i++){
-        printf("%c ", 'A' + i);
-        for(j = 0; j < TAM; j++){
-            if (mat1[i][j] == '~' || mat1[i][j] == 'a') {
-                printf("\033[44m \033[0m ");
-            } else if (mat1[i][j] == 'N') {
-                printf("\033[42mN\033[0m ");
-            } else if (mat1[i][j] == 'O') {
-                printf("\033[36mO\033[0m ");
-            } else if (mat1[i][j] == 'X') {
-                printf("\033[31mX\033[0m ");
-            } else {
-                printf("%c ", mat1[i][j]);
-            }
-        }
-
+    // Imprime as linhas de ambas as matrizes lado a lado
+    for (int i = 0; i < TAM; i++) {
+        print_linha(mat1, i);
         printf("\t");
-
-        printf("%c ", 'A' + i);
-        for(j = 0; j < TAM; j++){
-            if (mat2[i][j] == '~' || mat2[i][j] == 'a') {
-                printf("\033[44m \033[0m ");
-            } else if (mat2[i][j] == 'N') {
-                printf("\033[42mN\033[0m ");
-            } else if (mat2[i][j] == 'O') {
-                printf("\033[36mO\033[0m ");
-            } else if (mat2[i][j] == 'X') {
-                printf("\033[31mX\033[0m ");
-            } else {
-                printf("%c ", mat2[i][j]);
-            }
-        }
+        print_linha(mat2, i);
         putchar('\n');
     }
 }
