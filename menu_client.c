@@ -10,7 +10,7 @@
 #pragma comment(lib, "ws2_32.lib")
 
 #define TAM 10
-#define NUM_NAVIOS 9
+#define NUM_NAVIOS 1
 #define SERVER_IP "127.0.0.1" // Endereço IP do servidor do pc que abrir o server
 #define PORT 8080
 
