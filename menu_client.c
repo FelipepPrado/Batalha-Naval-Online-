@@ -10,7 +10,7 @@
 #pragma comment(lib, "ws2_32.lib")
 
 #define TAM 10
-#define NUM_NAVIOS 1
+#define NUM_NAVIOS 9
 #define SERVER_IP "127.0.0.1" // Endereço IP do servidor do pc que abrir o server
 #define PORT 8080
 
@@ -44,14 +44,19 @@ int main() {
     WSADATA wsaData;
     SOCKET clientSocket;
     struct sockaddr_in serverAddr;
+    //Variaveis para receber a coordenada de ataque do Jogador 2
     int colbuffer, linbuffer;
-    int bytesReceived;
-    char mat_def[TAM][TAM], mat_atk[TAM][TAM];//Matrizes de Ataque e defesa
+    //Matrizes de Ataque e Defesa do Jogador 1
+    char mat_def[TAM][TAM], mat_atk[TAM][TAM];
+    //Variaveis para mandar a coordenada de ataque do Jogador 1
     int x, y;
     char col;
+    //Variavel de controle para inicio do jogo assim que os dois colocarem os navios
     int jogo_ativo;
-    int hitbuffer, count_vt, count_dt;
+    int hitbuffer;
+    int count_vt, count_dt;
     int ret, jogar_de_novo;
+    //Variaveis para verificar se está ocorrendo a comunicação
     int verificar1, verificar2;
     setlocale(LC_ALL, "Portuguese");
     
@@ -179,15 +184,18 @@ int main() {
                 //Verifica o retorno do servidor se o jogador 1 acertou
                 if(hitbuffer == 1){
                     mat_atk[x][y] = 'X'; // 'X' representa um navio atingido
-                    printf("Acertou!\n");
+                    printf("Acertou!!!\n");
                     count_vt+=1;
                 }
                 else{
                     if(mat_atk[x][y] == '~'){//Não tem o 'a' na condição pq a matriz ataque n possui esse 'a'
                         mat_atk[x][y] = 'O'; // 'O' representa um ataque na água
-                        printf("Água!\n");
+                        printf("Água!!!\n");
                     }
                 }
+                printf("Jogador 1 (Defesa)\t\tJogador 1 (Ataque)\n");
+                print2_mat(mat_def, mat_atk);
+                Sleep(1500);
                 
                 //Verifica se o Jogador 1 venceu
                 if(count_vt == 3){
@@ -482,6 +490,7 @@ bool posicionar_navio_tam3(int i, char mat[][TAM]){
         mat[x-1][y]='N';
         area_nav(mat,x-1,y);
         area_nav(mat,x+1,y);
+        system("cls");
         printf("Tabuleiro atual:\n");
         print_mat(mat); 
         return 1; // Sucesso
@@ -492,6 +501,7 @@ bool posicionar_navio_tam3(int i, char mat[][TAM]){
         mat[x][y-1]='N';
         area_nav(mat,x,y-1);
         area_nav(mat,x,y+1);
+        system("cls");
         printf("Tabuleiro atual:\n");
         print_mat(mat);
         return 1; // Sucesso
@@ -525,6 +535,7 @@ bool posicionar_navio_tam2(int i,char mat[][TAM]){
             mat[x+1][y]='N';
             area_nav(mat,x,y);
             area_nav(mat,x+1,y);
+            system("cls");
             printf("Tabuleiro atual:\n");
             print_mat(mat);
             return 1; // Sucesso    
@@ -541,6 +552,7 @@ bool posicionar_navio_tam2(int i,char mat[][TAM]){
             mat[x][y+1]='N';
             area_nav(mat,x,y);
             area_nav(mat,x,y+1);
+            system("cls");
             printf("Tabuleiro atual:\n");
             print_mat(mat);
             return 1; // Sucesso    
@@ -562,7 +574,9 @@ bool posicionar_navio_tam1(int i,char mat[][TAM]){
             if(x >= 0 && x < TAM && y >= 0 && y < TAM && mat[x][y] == '~'){
             	mat[x][y]='N';
             	area_nav(mat,x,y);
-            	print_mat(mat);	
+                system("cls");
+                printf("Tabuleiro atual:\n");
+            	print_mat(mat);
                 return 1;
             }
             printf("Posição inválida ou ocupada. Tente novamente.\n");
@@ -571,7 +585,6 @@ bool posicionar_navio_tam1(int i,char mat[][TAM]){
 
 void posicionar_navios(char mat[][TAM]){
     int i;
-    
     for(i = 0; i < NUM_NAVIOS; i++){
         //Primeiro o jogador coloca os navios de tamanho 3
 		if(i<3){
