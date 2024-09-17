@@ -12,7 +12,7 @@
 
 #define TAM 10
 #define NUM_NAVIOS 1
-#define SERVER_IP "192.168.0.5" // EndereÁo IP do servidor do pc que abrir o server
+#define SERVER_IP "127.0.0.1" // Endere√ßo IP do servidor do pc que abrir o server
 #define PORT 8080
 #define TAMANHO_BUFFER 1024
 
@@ -28,7 +28,7 @@ void inic_mat(char mat[][TAM]);
 void area_nav(char mat[][TAM],int x,int y);
 void print_mat(char mat[][TAM]);
 
-// Printar duas matrizes lado a lado com rÛtulos
+// Printar duas matrizes lado a lado com r√≥tulos
 void print2_mat(char mat1[][TAM], char mat2[][TAM]);
 
 // As 3 funcoes retornam 1 se bem-sucedida, 0 se fracassada
@@ -39,7 +39,7 @@ bool posicionar_navio_tam1(int i, char mat[][TAM]);
 // Posiciona navios no tabuleiro
 void posicionar_navios(char mat[][TAM]);
 
-// Realiza um ataque na matriz do advers·rio
+// Realiza um ataque na matriz do advers√°rio
 bool realizar_ataque(char mat_defesa[][TAM], int x, int y);
 
 int main() {
@@ -58,7 +58,7 @@ int main() {
     int hitbuffer;
     int count_vt, count_dt;
     int ret, jogar_de_novo;
-    //Variaveis para verificar se est· ocorrendo a comunicaÁ„o
+    //Variaveis para verificar se est√° ocorrendo a comunica√ß√£o
     int verificar1, verificar2;
     setlocale(LC_ALL, "Portuguese");
     //Variaveis relacionadas aos nicknames dos jogadores
@@ -76,7 +76,7 @@ int main() {
 
         // Inicializa o Winsock
         if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-            printf("Falha na inicializaÁ„o do Winsock.\n");
+            printf("Falha na inicializa√ß√£o do Winsock.\n");
             return 1;
         }
 
@@ -88,7 +88,7 @@ int main() {
             return 1;
         }
 
-        // Configura o endereÁo do servidor
+        // Configura o endere√ßo do servidor
         serverAddr.sin_family = AF_INET;
         serverAddr.sin_addr.s_addr = inet_addr(SERVER_IP);
         serverAddr.sin_port = htons(PORT);
@@ -107,12 +107,12 @@ int main() {
         printf("Insira seu nickname:\n");
         scanf("%s", nick);
         send(clientSocket, nick, strlen(nick), 0);
-     	 // LÍ o nickname enviado pelo server e armazena na variavel nick_jogador2
+     	 // L√™ o nickname enviado pelo server e armazena na variavel nick_jogador2
     	valread = recv(clientSocket, nick_jogador2, TAMANHO_BUFFER - 1, 0);
        //Verifica se o nickname do jogador 2 foi armazenado com sucesso
 	    if (valread > 0){
         nick_jogador2[valread] = '\0';  // Garantir que a string tenha o terminador nulo
-        printf("\nSeu advers·rio È %s\n\n", nick_jogador2);
+        printf("\nSeu advers√°rio √© %s\n\n", nick_jogador2);
 	} else {
         printf("Nenhum dado recebido.\n");
     }
@@ -131,7 +131,7 @@ int main() {
             printf("%s, posicione seus navios:\n", nick);
             posicionar_navios(mat_def);
 
-            //Serve pro jogo comeÁar apenas quando os dois terminarem de colocar os navios
+            //Serve pro jogo come√ßar apenas quando os dois terminarem de colocar os navios
             send(clientSocket, (char*)&jogo_ativo, sizeof(jogo_ativo), 0);
             
             // Recebe dados do cliente
@@ -140,7 +140,7 @@ int main() {
                 system("cls");
                 printf("Vez do %s\n", nick_jogador2);
 
-                //Verifica se o jogador 2 ainda est· jogando
+                //Verifica se o jogador 2 ainda est√° jogando
                 verificar1 = recv(clientSocket,(char*)&linbuffer, sizeof(linbuffer), 0);
                 verificar2 = recv(clientSocket,(char*)&colbuffer, sizeof(colbuffer), 0);
                 if(verificar1 <= 0 || verificar2 <= 0){
@@ -161,7 +161,7 @@ int main() {
                 printf("%s (Defesa)\t\t%s (Ataque)\n", nick, nick);
                 print2_mat(mat_def, mat_atk);
 
-                //Envia para o jogador 2 se ele acertou ou n„o um navio
+                //Envia para o jogador 2 se ele acertou ou n√£o um navio
                 send(clientSocket,(char*)&hitbuffer, sizeof(hitbuffer), 0);
 
                 //Verifica se o jogador 1 perdeu
@@ -195,7 +195,7 @@ int main() {
                 send(clientSocket, (char*)&x, sizeof(x), 0);
                 send(clientSocket, (char*)&y, sizeof(y), 0);
 
-                //Verificar se o jogador 2 ainda est· jogando e Recebe se o jogador 1 acertou ou n„o um navio
+                //Verificar se o jogador 2 ainda est√° jogando e Recebe se o jogador 1 acertou ou n√£o um navio
                 verificar1 = recv(clientSocket, (char*)&hitbuffer, sizeof(int), 0);
                 if(verificar1 <= 0){
                     printf("%s desconectou-se do jogo\n\n", nick_jogador2);
@@ -209,9 +209,9 @@ int main() {
                     count_vt+=1;
                 }
                 else{
-                    if(mat_atk[x][y] == '~'){//N„o tem o 'a' na condiÁ„o pq a matriz ataque n possui esse 'a'
-                        mat_atk[x][y] = 'O'; // 'O' representa um ataque na ·gua
-                        printf("¡gua!!!\n");
+                    if(mat_atk[x][y] == '~'){//N√£o tem o 'a' na condi√ß√£o pq a matriz ataque n possui esse 'a'
+                        mat_atk[x][y] = 'O'; // 'O' representa um ataque na √°gua
+                        printf("√Ågua!!!\n");
                     }
                 }
                 printf("%s (Defesa)\t\t%s (Ataque)\n", nick, nick);
@@ -225,12 +225,12 @@ int main() {
                 }
             }
 
-            //Ele pergunta se quer jogar novamente, mas caso o jogador j· n„o estiver em jogo, ele volta para o menu
+            //Ele pergunta se quer jogar novamente, mas caso o jogador j√° n√£o estiver em jogo, ele volta para o menu
             if(rept() && verificar1 > 0 && verificar2 > 0){
                 jogar_de_novo = 1;
                 send(clientSocket, (char*)&jogar_de_novo, sizeof(int), 0);
                 printf("Esperando resposta do segundo jogdor\n");
-                jogar_de_novo = 0;//Server pra n„o continuar, caso o jogador 2 n„o querer jogor novamente
+                jogar_de_novo = 0;//Server pra n√£o continuar, caso o jogador 2 n√£o querer jogor novamente
                 recv(clientSocket, (char*)&jogar_de_novo, sizeof(int), 0);
                 if(jogar_de_novo == 1){//Supondo que ele tenha respondido
                     continue;
@@ -238,7 +238,7 @@ int main() {
                 else{
                     closesocket(clientSocket);
                     WSACleanup();
-                    printf("%s n„o aceitou sua solicitaÁ„o.\nRetornando ao Menu\n", nick_jogador2);
+                    printf("%s n√£o aceitou sua solicita√ß√£o.\nRetornando ao Menu\n", nick_jogador2);
                     Sleep(1000);
                     break;
                 }
@@ -282,7 +282,7 @@ int rodar_jogo(){
 }
 
 void menu() {
-    // CÛdigo ANSI para a cor azul
+    // C√≥digo ANSI para a cor azul
     printf("\033[1;34m");
 
     // Imprimir o texto em formato ASCII
@@ -292,18 +292,18 @@ void menu() {
     printf("* 88~~~b. 88~~~88    88    88~~~88 88      88~~~88 88~~~88      88 V8o88 88~~~88 `8b  d8' 88~~~88 88 *\n");
     printf("* 88   8D 88   88    88    88   88 88booo. 88   88 88   88      88  V888 88   88  `8bd8'  88   88 88booo. *\n");
     printf("* Y8888P' YP   YP    YP    YP   YP Y88888P YP   YP YP   YP      VP   V8P YP   YP    YP    YP   YP Y88888P *\n");
-    // Resetar a cor para o padr„o
+    // Resetar a cor para o padr√£o
     printf("\033[0m");
 
 
-    // EspaÁo antes do menu para clareza
+    // Espa√ßo antes do menu para clareza
     printf("\n");
 
-    // Menu de opÁıes
+    // Menu de op√ß√µes
     printf("\t\t\t\t\t1. Jogar\n");
     printf("\t\t\t\t\t2. Sair\n");
 
-    // Linha divisÛria
+    // Linha divis√≥ria
     printf("\n\t\t\t\t\t===========================\n");
 }
 int rept(){
@@ -319,7 +319,7 @@ int rept(){
                 case 2:
                     return 0;
                 default:
-                    printf("OpÁ„o invalida. Tente novamente.\n");
+                    printf("Op√ß√£o invalida. Tente novamente.\n");
         }
     }
 }
@@ -388,7 +388,7 @@ void inic_mat(char mat[][TAM]){
     int i, j;
     for(i = 0; i < TAM; i++){
         for(j = 0; j < TAM; j++){
-            mat[i][j] = '~'; // Inicialmente apenas ·gua
+            mat[i][j] = '~'; // Inicialmente apenas √°gua
         }
     }
 }
@@ -428,7 +428,7 @@ void print_mat(char mat[][TAM]) {
                 case 'X':  // Texto vermelho
                     printf("\033[31mX\033[0m ");
                     break;
-                default:   // Caso padr„o
+                default:   // Caso padr√£o
                     printf("%c ", mat[i][j]);
             }
         }
@@ -437,7 +437,7 @@ void print_mat(char mat[][TAM]) {
 }
 
 void print_coluna() {
-    // Imprime o cabeÁalho com n˙meros das colunas
+    // Imprime o cabe√ßalho com n√∫meros das colunas
     printf("  ");
     for (int j = 0; j < TAM; j++) {
         printf("%d ", j);
@@ -445,7 +445,7 @@ void print_coluna() {
 }
 
 void print_linha(char mat[][TAM], int row) {
-    // Imprime uma linha da matriz com a formataÁ„o de cores
+    // Imprime uma linha da matriz com a formata√ß√£o de cores
     printf("%c ", 'A' + row);
     for (int j = 0; j < TAM; j++) {
         switch (mat[row][j]) {
@@ -462,14 +462,14 @@ void print_linha(char mat[][TAM], int row) {
             case 'X':  // Texto vermelho
                 printf("\033[31mX\033[0m ");
                 break;
-            default:   // Caso padr„o
+            default:   // Caso padr√£o
                 printf("%c ", mat[row][j]);
         }
     }
 }
 
 void print2_mat(char mat1[][TAM], char mat2[][TAM]) {
-    // Imprime os cabeÁalhos das colunas para ambas as matrizes
+    // Imprime os cabe√ßalhos das colunas para ambas as matrizes
     print_coluna();
     printf("\t");
     print_coluna();
@@ -489,10 +489,10 @@ bool posicionar_navio_tam3(int i, char mat[][TAM]){
     char linha,sent;
     int x,y;
 
-    printf("Defina a direÁ„o do navio de tamanho 3 em Vertica(V) ou Horizontal(H): ");
+    printf("Defina a dire√ß√£o do navio de tamanho 3 em Vertica(V) ou Horizontal(H): ");
     scanf(" %c", &sent);
     if(sent != 'V' && sent != 'v' && sent != 'H' && sent != 'h'){
-        printf("DireÁ„o invalida\n");
+        printf("Dire√ß√£o invalida\n");
         return 0;
     }
     
@@ -500,13 +500,13 @@ bool posicionar_navio_tam3(int i, char mat[][TAM]){
     scanf(" %c %d", &linha, &y);
     fflush(stdin);
     
-    x = linha - 'A'; // Converte a letra da linha para Ìndice numÈrico
+    x = linha - 'A'; // Converte a letra da linha para √≠ndice num√©rico
 
     if(x >= 0 && x < TAM && y >= 0 && y < TAM && mat[x][y] == '~'){
         mat[x][y]='N';
     }
     else {
-        printf("PosiÁ„o inv·lida ou ocupada. Tente novamente.\n");
+        printf("Posi√ß√£o inv√°lida ou ocupada. Tente novamente.\n");
     	return 0; // Indica o fracasso na operacao
     }
 
@@ -532,7 +532,7 @@ bool posicionar_navio_tam3(int i, char mat[][TAM]){
         return 1; // Sucesso
     }
     
-    printf("PosiÁ„o inv·lida ou ocupada. Tente novamente\n");
+    printf("Posi√ß√£o inv√°lida ou ocupada. Tente novamente\n");
     mat[x][y]='~';
     return 0;      
 }
@@ -541,11 +541,11 @@ bool posicionar_navio_tam2(int i,char mat[][TAM]){
     char linha,sent;
     int x,y;
     
-    printf("Defina a direÁ„o do navio de tamanho 2 em Vertica(V) ou Horizontal(H): ");
+    printf("Defina a dire√ß√£o do navio de tamanho 2 em Vertica(V) ou Horizontal(H): ");
     scanf(" %c", &sent);
 
     if(sent != 'V' && sent != 'v' && sent != 'H' && sent != 'h'){
-        printf("DireÁ„o invalida\n");
+        printf("Dire√ß√£o invalida\n");
         return 0;
     }
 
@@ -553,7 +553,7 @@ bool posicionar_navio_tam2(int i,char mat[][TAM]){
         printf("Posicione o extremo de cima do navio %d de tamanho 2 (ex: A 1): ", i + 1);
         scanf(" %c %d", &linha, &y);
         fflush(stdin);
-        x = linha - 'A'; // Converte a letra da coluna para Ìndice numÈrico
+        x = linha - 'A'; // Converte a letra da coluna para √≠ndice num√©rico
 
         if(x >= 0 && x+1 < TAM && y >= 0 && y < TAM && mat[x][y] == '~' && mat[x+1][y] == '~'){
             mat[x][y]='N';
@@ -570,7 +570,7 @@ bool posicionar_navio_tam2(int i,char mat[][TAM]){
         printf("Posicione o extremo da esquerda do navio %d de tamanho 2 (ex: A 1): ", i + 1);
         scanf(" %c %d", &linha, &y);
         fflush(stdin);
-        x = linha - 'A'; // Converte a letra da coluna para Ìndice numÈrico
+        x = linha - 'A'; // Converte a letra da coluna para √≠ndice num√©rico
 
         if(x >= 0 && x < TAM &&  y >= 0 && y+1 < TAM && mat[x][y] == '~' && mat[x][y+1] == '~'){
             mat[x][y]='N';
@@ -583,7 +583,7 @@ bool posicionar_navio_tam2(int i,char mat[][TAM]){
             return 1; // Sucesso    
         }
     }
-    printf("PosiÁ„o Invalida ou ocupada. Tente novamente\n");
+    printf("Posi√ß√£o Invalida ou ocupada. Tente novamente\n");
     return 0;
 
 }
@@ -594,7 +594,7 @@ bool posicionar_navio_tam1(int i,char mat[][TAM]){
 
     printf("Posicione o navio %d de tamanho 1 (ex: A 1): ", i + 1);
             scanf(" %c %d", &linha, &y);
-            x = linha - 'A'; // Converte a letra da coluna para Ìndice numÈrico
+            x = linha - 'A'; // Converte a letra da coluna para √≠ndice num√©rico
 
             if(x >= 0 && x < TAM && y >= 0 && y < TAM && mat[x][y] == '~'){
             	mat[x][y]='N';
@@ -604,7 +604,7 @@ bool posicionar_navio_tam1(int i,char mat[][TAM]){
             	print_mat(mat);
                 return 1;
             }
-            printf("PosiÁ„o inv·lida ou ocupada. Tente novamente.\n");
+            printf("Posi√ß√£o inv√°lida ou ocupada. Tente novamente.\n");
             return 0;
 }
 
@@ -639,7 +639,7 @@ bool realizar_ataque(char mat_defesa[][TAM], int x, int y){
         return true;
     }
     else if(mat_defesa[x][y] == '~' || mat_defesa[x][y] == 'a'){
-        mat_defesa[x][y] = 'O'; // 'O' representa um ataque na ·gua
+        mat_defesa[x][y] = 'O'; // 'O' representa um ataque na √°gua
         return false;
     }
     return false;
