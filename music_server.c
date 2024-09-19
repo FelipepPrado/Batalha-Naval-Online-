@@ -180,9 +180,8 @@ int main() {
                 scanf(" %c%d", &col, &y);
                 x = col - 'A';
                 //Realiza o som do disparo
-                const char *disparo = "C:/Users/Gustavo/Desktop/audiosbt/disparo.wav";
+                const char *disparo = "C:/Users/Patric/Documents/audiosbt/disparo.wav";
                 PlaySound(disparo, NULL, SND_FILENAME | SND_ASYNC); // Som do disparo
-                Sleep(2100);
                 if(x < 0 || x >= TAM || y < 0 || y >= TAM){
                     printf("Coordenadas Invalidas!!\n");
                     Sleep(500);
@@ -191,30 +190,21 @@ int main() {
                 send(clientSocket, (char*)&x, sizeof(x), 0);
                 send(clientSocket, (char*)&y, sizeof(y), 0);
                 
-                const char *acertousom = "C:/Users/Gustavo/Desktop/audiosbt/acertou.wav", 
-                *errousom = "C:/Users/Gustavo/Desktop/audiosbt/errou.wav";
-
                 //Verifica se o jogador 2 ainda est� jogando e Recebe se o jogador 1 acertou ou n�o um navio
                 verificar1 = recv(clientSocket, (char*)&hitbuffer, sizeof(hitbuffer), 0);
                 if(verificar1 <= 0){
                     printf("%s desconectou-se do jogo\n\n", nick_jogador2);
                     break;
                 }
-
+                system("cls");
                 //Verifica o retorno do client se o jogador 1 acertou
                 if(hitbuffer == 1){
-                    PlaySound(acertousom, NULL, SND_FILENAME | SND_ASYNC); //Som do acerto
-                    Sleep(6000);
-                    comecar_mar();
                     mat_atk[x][y] = 'X'; // 'X' representa um navio atingido
                     printf("Acertou!!!\n");
                     count_vt+=1;
                 }
                 else{
                     if(mat_atk[x][y] == '~'){//N�o tem o 'a' na condi��o pq a matriz ataque n possui esse 'a'
-                        PlaySound(errousom, NULL, SND_FILENAME | SND_ASYNC); //Som do erro
-                        Sleep(3000);
-                        comecar_mar(); //Volta o som do mar
                         mat_atk[x][y] = 'O'; // 'O' representa um ataque na �gua
                         printf("�gua!!!\n");
                     }
@@ -222,6 +212,7 @@ int main() {
                 printf("%s (Defesa)\t\t%s (Ataque)\n", nick, nick);
                 print2_mat(mat_def, mat_atk);
                 Sleep(1500);
+                comecar_mar(); // Volta o som do mar
 
                 //Verifica se o Jogador 1 venceu
                 if(count_vt == 3){
@@ -299,13 +290,13 @@ int main() {
 
 //Começa a música do menu
 void comecar_musica(){
-    const char *musicamenu = "C:/Users/Gustavo/Desktop/audiosbt/musicamenu.wav";
+    const char *musicamenu = "C:/Users/Patric/Documents/audiosbt/musicamenu.wav";
     PlaySound(musicamenu, NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 }
 
 //Começa o som do mar
 void comecar_mar(){
-    const char *mar = "C:/Users/Gustavo/Desktop/audiosbt/mar.wav";
+    const char *mar = "C:/Users/Patric/Documents/audiosbt/mar.wav";
     PlaySound(mar, NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 }
 
@@ -706,5 +697,4 @@ bool realizar_ataque(char mat_defesa[][TAM], int x, int y){
     }
     return false;
 }
-
 
