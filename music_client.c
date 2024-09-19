@@ -14,7 +14,7 @@
 #define NUM_NAVIOS 1
 #define SERVER_IP "127.0.0.1" // Endereço IP do servidor do pc que abrir o server
 #define PORT 8080
-#define TAMANHO_BUFFER 1024
+#define TAMANHO_BUFFER 100
 
 //Menu e jogar novamente
 int rodar_jogo();
@@ -47,7 +47,7 @@ bool posicionar_navio_tam1(int i, char mat[][TAM]);
 void posicionar_navios(char mat[][TAM]);
 
 // Realiza um ataque na matriz do adversário
-bool realizar_ataque(char mat_defesa[][TAM], int x, int y);
+bool receber_ataque(char mat_defesa[][TAM], int x, int y);
 
 int main() {
     WSADATA wsaData;
@@ -124,7 +124,10 @@ int main() {
         nick_jogador2[valread] = '\0';  // Garantir que a string tenha o terminador nulo
         printf("\nSeu adversário é %s\n\n", nick_jogador2);
 	} else {
-        printf("Nenhum dado recebido.\n");
+        printf("Jogador 2 não se conectou\n");
+        printf("Retornando ao Menu\n");
+        Sleep(3000);
+        continue;
     }
     
 	
@@ -165,7 +168,7 @@ int main() {
                 }
 
                 //Verifica se o jogador 2 acertou e devolve um valor de acordo com isso
-                if(realizar_ataque(mat_def,linbuffer,colbuffer)){
+                if(receber_ataque(mat_def,linbuffer,colbuffer)){
                     hitbuffer = 1;
                     comecar_mar();
                     printf("SEU NAVIO FOI ACERTADO\n");
@@ -219,7 +222,7 @@ int main() {
                 send(clientSocket, (char*)&x, sizeof(x), 0);
                 send(clientSocket, (char*)&y, sizeof(y), 0);
 
-                //Verifica se o jogador 2 ainda est� jogando e Recebe se o jogador 1 acertou ou n�o um navio
+                //Verifica se o jogador 2 ainda está jogando e Recebe se o jogador 1 acertou ou não um navio
                 verificar1 = recv(clientSocket, (char*)&hitbuffer, sizeof(hitbuffer), 0);
                 if(verificar1 <= 0){
                     printf("%s desconectou-se do jogo\n\n", nick_jogador2);
@@ -233,9 +236,9 @@ int main() {
                     count_vt+=1;
                 }
                 else{
-                    if(mat_atk[x][y] == '~'){//N�o tem o 'a' na condi��o pq a matriz ataque n possui esse 'a'
-                        mat_atk[x][y] = 'O'; // 'O' representa um ataque na �gua
-                        printf("�gua!!!\n");
+                    if(mat_atk[x][y] == '~'){//Não tem o 'a' na condição pq a matriz ataque n possui esse 'a'
+                        mat_atk[x][y] = 'O'; // 'O' representa um ataque na água
+                        printf("Água!!!\n");
                     }
                 }
                 printf("%s (Defesa)\t\t%s (Ataque)\n", nick, nick);
@@ -252,31 +255,39 @@ int main() {
             }
 
             //Ele pergunta se quer jogar novamente, mas caso o jogador já não estiver em jogo, ele volta para o menu
-            if(rept() && verificar1 > 0 && verificar2 > 0){
-                jogar_de_novo = 1;
-                send(clientSocket, (char*)&jogar_de_novo, sizeof(int), 0);
-                printf("Esperando resposta do segundo jogdor\n");
-                jogar_de_novo = 0;//Server pra não continuar, caso o jogador 2 não querer jogor novamente
-                recv(clientSocket, (char*)&jogar_de_novo, sizeof(int), 0);
-                if(jogar_de_novo == 1){//Supondo que ele tenha respondido
-                    continue;
+            if(verificar1 > 0 && verificar2 > 0){
+                if(rept()){
+                    jogar_de_novo = 1;
+                    send(clientSocket, (char*)&jogar_de_novo, sizeof(int), 0);
+                    printf("Esperando resposta do %s\n", nick_jogador2);
+                    jogar_de_novo = 0;//Server pra não continuar, caso o jogador 2 não querer jogor novamente
+                    recv(clientSocket, (char*)&jogar_de_novo, sizeof(int), 0);
+                    if(jogar_de_novo == 1){//Supondo que ele tenha respondido
+                        printf("%s aceitou sua solicitação.\nRecomeçando o Jogo\n");
+                        Sleep(3000);
+                        system("cls");
+                        continue;
+                    }
+                    else{
+                        closesocket(clientSocket);
+                        WSACleanup();
+                        printf("%s não aceitou sua solicitação.\nRetornando ao Menu\n", nick_jogador2);
+                        Sleep(3000);
+                        break;
+                    }
                 }
                 else{
+                    // Fecha o socket do cliente
                     closesocket(clientSocket);
                     WSACleanup();
-                    printf("%s não aceitou sua solicitação.\nRetornando ao Menu\n", nick_jogador2);
-                    Sleep(1000);
-                    break;
+                    return 0;
                 }
             }
-            else{
-                // Fecha o socket do cliente
-                closesocket(clientSocket);
-                WSACleanup();
-                printf("Retornando ao Menu\n");
-                Sleep(1000);
-                break;
-            }
+
+            //Caso o jogador 2 não estiver no jogo ele já volta direto para o menu
+            printf("Retornando ao Menu!");
+            Sleep(3000);
+            break;
         }
     }
 }
@@ -678,7 +689,7 @@ void posicionar_navios(char mat[][TAM]){
     }
 }
 
-bool realizar_ataque(char mat_defesa[][TAM], int x, int y){
+bool receber_ataque(char mat_defesa[][TAM], int x, int y){
     if(mat_defesa[x][y] == 'N'){
         mat_defesa[x][y] = 'X'; // 'X' representa um navio atingido
         return true;
