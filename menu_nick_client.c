@@ -14,7 +14,7 @@
 #define NUM_NAVIOS 1
 #define SERVER_IP "127.0.0.1" // Endereço IP do servidor do pc que abrir o server
 #define PORT 8080
-#define TAMANHO_BUFFER 1024
+#define TAMANHO_BUFFER 100
 
 //Menu e jogar novamente
 int rodar_jogo();
