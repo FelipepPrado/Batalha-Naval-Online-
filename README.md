@@ -52,17 +52,17 @@
  <p><strong>Ajudante</strong>: Luis</p>
  </div>
 
-    <div class="section">
+<div class="section">
         <h2>💡 Funcionalidades Adicionais</h2>
 
-        <h3>🔊 Som</h3>
+ <h3>🔊 Som</h3>
         <p>Adicionamos efeitos sonoros para melhorar a imersão durante o jogo. Agora cada ataque e afundamento de navio tem seu som exclusivo! 🎶🎯</p>
 
-        <h3>🌐 Conexão Online TCP</h3>
+ <h3>🌐 Conexão Online TCP</h3>
         <p>Funcionalidade multiplayer online via <strong>protocolo TCP</strong>, permitindo batalhas à distância entre dois jogadores. Conecte-se e desafie um amigo! 🌍🕹️</p>
     </div>
 
-    <div class="section">
+<div class="section">
         <h2>🎮 Como Jogar</h2>
         <ol>
             <li>Execute o jogo em seu computador.</li>
@@ -73,12 +73,12 @@
         </ol>
     </div>
 
-    <div class="section">
+<div class="section">
         <h2>🙌 Agradecimentos</h2>
         <p>Agradecemos a todos os membros do grupo pelo esforço e dedicação no desenvolvimento deste projeto. Um agradecimento especial aos responsáveis pelas <strong>funcionalidades extras</strong> que fizeram o jogo ainda mais divertido! 🎉👏</p>
     </div>
 
-    <footer>
+<footer>
         <p>Feito com 💻 e 💡 por uma equipe incrível.</p>
     </footer>
 
