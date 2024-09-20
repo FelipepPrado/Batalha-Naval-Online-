@@ -1,9 +1,8 @@
 
+<h1>🎯 Jogo Batalha Naval</h1>
+<p>Este é um projeto de <strong>Batalha Naval</strong> desenvolvido com muita colaboração e empenho pelo nosso grupo, com funcionalidades extras como <strong>som</strong> e <strong>conexão online via TCP</strong>. ⚓️🌊</p>
 
-    <h1>🎯 Jogo Batalha Naval</h1>
-    <p>Este é um projeto de <strong>Batalha Naval</strong> desenvolvido com muita colaboração e empenho pelo nosso grupo, com funcionalidades extras como <strong>som</strong> e <strong>conexão online via TCP</strong>. ⚓️🌊</p>
-
-    <div class="section">
+<div class="section">
         <h2>🌟 Membros do Grupo</h2>
         <table>
             <tr>
@@ -37,21 +36,21 @@
         </table>
     </div>
 
-    <div class="section">
+ <div class="section">
         <h2>🚀 Tópicos Desenvolvidos no Jogo</h2>
         
-        <h3>🎨 Visual</h3>
-        <p><strong>Responsáveis</strong>: Luis e Gizzam</p>
-        <p><strong>Ajudantes</strong>: Felipe, Patric, João Paulo, Miguel</p>
+<h3>🎨 Visual</h3>
+<p><strong>Responsáveis</strong>: Luis e Gizzam</p>
+<p><strong>Ajudantes</strong>: Felipe, Patric, João Paulo, Miguel</p>
 
-        <h3>🗂️ Menu</h3>
-        <p><strong>Responsáveis</strong>: João Paulo e Miguel</p>
-        <p><strong>Ajudantes</strong>: Felipe, Luis e Patric</p>
+<h3>🗂️ Menu</h3>
+ <p><strong>Responsáveis</strong>: João Paulo e Miguel</p>
+ <p><strong>Ajudantes</strong>: Felipe, Luis e Patric</p>
 
-        <h3>🔍 Lógica do Jogo</h3>
-        <p><strong>Responsáveis</strong>: Patric e Felipe</p>
-        <p><strong>Ajudante</strong>: Luis</p>
-    </div>
+  <h3>🔍 Lógica do Jogo</h3>  
+<p><strong>Responsáveis</strong>: Patric e Felipe</p>
+ <p><strong>Ajudante</strong>: Luis</p>
+ </div>
 
     <div class="section">
         <h2>💡 Funcionalidades Adicionais</h2>
