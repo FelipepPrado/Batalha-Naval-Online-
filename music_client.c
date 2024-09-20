@@ -11,7 +11,7 @@
 #pragma comment(lib, "ws2_32.lib")
 
 #define TAM 10
-#define NUM_NAVIOS 1
+#define NUM_NAVIOS 9
 #define SERVER_IP "127.0.0.1" // Endereço IP do servidor do pc que abrir o server
 #define PORT 8080
 #define TAMANHO_BUFFER 100
@@ -170,24 +170,21 @@ int main() {
                 //Verifica se o jogador 2 acertou e devolve um valor de acordo com isso
                 if(receber_ataque(mat_def,linbuffer,colbuffer)){
                     hitbuffer = 1;
-                    comecar_mar();
                     printf("SEU NAVIO FOI ACERTADO\n");
                     count_dt+=1;
                 }
                 else{
                     hitbuffer = 0;
-                    comecar_mar();
                     printf("%s Errou!!!!!!!\n", nick_jogador2);
                 }
                 printf("%s (Defesa)\t\t%s (Ataque)\n", nick, nick);
                 print2_mat(mat_def, mat_atk);
-                comecar_mar();
 
                 //Envia para o jogador 2 se ele acertou ou não um navio
                 send(clientSocket,(char*)&hitbuffer, sizeof(hitbuffer), 0);
 
                 //Verifica se o jogador 1 perdeu
-                if(count_dt == 3){
+                if(count_dt == 18){
                     printf("%s voce perdeu!\n\n\n", nick);
                     parar_som();
                     break;
@@ -244,10 +241,10 @@ int main() {
                 printf("%s (Defesa)\t\t%s (Ataque)\n", nick, nick);
                 print2_mat(mat_def, mat_atk);
                 Sleep(1500);
-                comecar_mar();
+                comecar_mar(); // Volta o som do mar
 
                 //Verifica se o Jogador 1 venceu
-                if(count_vt == 3){
+                if(count_vt == 18){
                     printf("%s venceu!\n\n", nick);
                     parar_som();
                     break;
