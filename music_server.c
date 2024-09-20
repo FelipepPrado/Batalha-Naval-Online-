@@ -11,7 +11,7 @@
 #pragma comment(lib, "ws2_32.lib")
 
 #define TAM 10
-#define NUM_NAVIOS 1
+#define NUM_NAVIOS 9
 #define PORT 8080
 #define TAMANHO_BUFFER 100
 
@@ -218,7 +218,7 @@ int main() {
                 comecar_mar(); // Volta o som do mar
 
                 //Verifica se o Jogador 1 venceu
-                if(count_vt == 3){
+                if(count_vt == 18){
                     printf("%s venceu!\n\n", nick);
                     parar_som();
                     break;
@@ -253,7 +253,7 @@ int main() {
                 send(clientSocket,(char*)&hitbuffer, sizeof(int), 0);
 
                 //Verifica se o jogador 1 perdeu
-                if(count_dt == 3){
+                if(count_dt == 18){
                     printf("%s você perdeu!\n", nick);
                     parar_som();
                     break;
