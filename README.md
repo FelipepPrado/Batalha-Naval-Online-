@@ -40,7 +40,7 @@
         <h2>🚀 Tópicos Desenvolvidos no Jogo</h2>
         
 <h3>🎨 Visual</h3>
-<p><strong>Responsáveis</strong>: Luis e Gizzam</p>
+<p><strong>Responsáveis</strong>: Luis e Jean Pierro</p>
 <p><strong>Ajudantes</strong>: Felipe, Patric, João Paulo, Miguel</p>
 
 <h3>🗂️ Menu</h3>
