@@ -66,8 +66,7 @@
         <h2>🎮 Como Jogar</h2>
         <ol>
             <li>Execute o jogo em seu computador.</li>
-            <li>No menu, escolha entre jogar localmente ou online.</li>
-            <li>Se optar por jogar online, insira o <strong>IP</strong> do outro jogador para iniciar a partida.</li>
+            <li>No menu, escolha entre jogar ou sair.</li>
             <li>Posicione seus navios estrategicamente e use suas habilidades para afundar as embarcações inimigas. ⚓💥</li>
             <li>O jogo termina quando todos os navios de um dos jogadores forem afundados. O último em pé vence! 🏆</li>
         </ol>
@@ -75,7 +74,7 @@
 
 <div class="section">
         <h2>🙌 Agradecimentos</h2>
-        <p>Agradecemos a todos os membros do grupo pelo esforço e dedicação no desenvolvimento deste projeto. Um agradecimento especial aos responsáveis pelas <strong>funcionalidades extras</strong> que fizeram o jogo ainda mais divertido! 🎉👏</p>
+        <p>Agradecemos a todos os membros do grupo pelo esforço e dedicação no desenvolvimento deste projeto.🎉👏</p>
     </div>
 
 <footer>
