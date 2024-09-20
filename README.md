@@ -52,6 +52,46 @@
  <p><strong>Ajudante</strong>: Luis</p>
  </div>
 
+ <div class="section">
+    <h2>📚 Bibliotecas Utilizadas</h2>
+    
+ <ul>
+        <li>
+            <strong><code>#include &lt;stdio.h&gt;</code></strong>:
+            <p>Biblioteca padrão de entrada e saída em C, utilizada para operações como leitura de dados (via <code>scanf()</code>) e escrita na tela (via <code>printf()</code>).</p>
+        </li>
+        <li>
+            <strong><code>#include &lt;winsock2.h&gt;</code></strong>:
+            <p>Biblioteca da API de sockets no Windows, necessária para implementar a funcionalidade de conexão online via TCP.</p>
+        </li>
+        <li>
+            <strong><code>#include &lt;stdbool.h&gt;</code></strong>:
+            <p>Biblioteca que permite o uso do tipo de dado <code>bool</code> em C, para trabalhar com valores booleanos (<code>true</code> ou <code>false</code>).</p>
+        </li>
+        <li>
+            <strong><code>#include &lt;locale.h&gt;</code></strong>:
+            <p>Biblioteca utilizada para configurar a localização do programa (idioma e formatação regional), útil para adaptar o jogo para diferentes culturas e linguagens.</p>
+        </li>
+        <li>
+            <strong><code>#include &lt;windows.h&gt;</code></strong>:
+            <p>Biblioteca de cabeçalho do Windows, usada para manipulação de janelas, cores, sons e outros recursos do sistema operacional.</p>
+        </li>
+        <li>
+            <strong><code>#include &lt;time.h&gt;</code></strong>:
+            <p>Biblioteca que oferece funções relacionadas ao tempo e data, usada para funcionalidades como cronômetro ou intervalos no jogo.</p>
+        </li>
+        <li>
+            <strong><code>#include &lt;stdlib.h&gt;</code></strong>:
+            <p>Biblioteca padrão que contém funções para alocação de memória, controle de processos e outras funções utilitárias.</p>
+        </li>
+        <li>
+            <strong><code>#include &lt;string.h&gt;</code></strong>:
+            <p>Biblioteca que fornece funções para manipulação de strings, como cópia, concatenação e comparação de cadeias de caracteres.</p>
+        </li>
+    </ul>
+</div>
+
+
 <div class="section">
         <h2>💡 Funcionalidades Adicionais</h2>
 
